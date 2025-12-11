@@ -5,6 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Аналоговые часы - API</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .suggestions {
+      position: absolute;
+      background: white;
+      border: 1px solid #ddd;
+      max-height: 200px;
+      overflow-y: auto;
+      width: 250px;
+      color: black;
+      z-index: 1000;
+      display: none;
+    }
+    .suggestion-item {
+      padding: 8px;
+      cursor: pointer;
+    }
+    .suggestion-item:hover {
+      background-color: #f0f0f0;
+    }
+    .timezone-input {
+      position: relative;
+      display: inline-block;
+    }
+    .error-message {
+      color: #ff6b6b;
+      margin-top: 5px;
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -19,18 +48,35 @@
     <div class="info">
       <p id="time-text">Загрузка...</p>
       <p id="angles-text"></p>
+      <p id="timezone-text"></p>
     </div>
     <div class="controls">
-      <button onclick="fetchTime()">Обновить время</button>
-      <input type="text" id="timezone" placeholder="Часовой пояс (например Europe/Moscow)" />
+      <button onclick="resetToLocalTime()">Локальное время</button>
       <button onclick="fetchTimeByTimezone()">Время по часовому поясу</button>
+      <div class="timezone-input">
+        <input type="text" id="timezone" placeholder="Часовой пояс (например Europe/Moscow)" 
+              oninput="showSuggestions()" onfocus="showSuggestions()" />
+        <div class="suggestions" id="suggestions"></div>
+        <div class="error-message" id="error-message"></div>
+      </div>
+      <button onclick="showAllTimezones()">Показать все часовые пояса</button>
     </div>
+    <div id="timezones-list" style="display: none; max-height: 300px; overflow-y: scroll; margin-top: 20px; text-align: left;"></div>
     <div class="endpoints">
       <h3>📡 Доступные эндпоинты API:</h3>
       <ul>
         <li><code>GET /api/time</code> — текущее время и углы стрелок</li>
         <li><code>GET /api/time/timezone?tz=...</code> — время для указанного часового пояса</li>
+        <li><code>GET /api/timezones</code> — список всех доступных часовых поясов</li>
       </ul>
+      <h4>Популярные часовые пояса:</h4>
+      <div class="popular-timezones">
+        <button class="tz-btn" onclick="setTimezone('Europe/Moscow')">Москва</button>
+        <button class="tz-btn" onclick="setTimezone('Europe/London')">Лондон</button>
+        <button class="tz-btn" onclick="setTimezone('America/New_York')">Нью-Йорк</button>
+        <button class="tz-btn" onclick="setTimezone('Asia/Tokyo')">Токио</button>
+        <button class="tz-btn" onclick="setTimezone('UTC')">UTC</button>
+      </div>
     </div>
   </div>
   <script src="script.js"></script>

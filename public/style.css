@@ -114,3 +114,24 @@ code {
   padding: 2px 6px;
   border-radius: 4px;
 }
+
+.popular-timezones {
+  margin-top: 10px;
+}
+
+.tz-btn {
+  background: #393e46;
+  margin: 3px;
+  padding: 5px 10px;
+  font-size: 0.9rem;
+}
+
+.tz-btn:hover {
+  background: #00adb5;
+}
+
+.error-message {
+  color: #ff2e63;
+  margin-top: 5px;
+  display: none;
+}

@@ -27,40 +27,97 @@ const getTimeByTimezone = (req, res) => {
   const tz = req.query.tz || 'UTC';
   try {
     const now = new Date();
+    
+    // Форматируем время для отображения
     const formatter = new Intl.DateTimeFormat('en-US', {
       timeZone: tz,
       hour: 'numeric',
       minute: 'numeric',
       second: 'numeric',
-      hour12: false
+      hour12: false,
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
-    const parts = formatter.formatToParts(now);
+    
+    const timeString = formatter.format(now);
+    
+    // Получаем числовые значения времени
+    const timeParts = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz,
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: false
+    }).formatToParts(now);
+    
     const timeObj = {};
-    parts.forEach(part => {
-      if (part.type === 'hour' || part.type === 'minute' || part.type === 'second') {
-        timeObj[part.type] = parseInt(part.value, 10);
-      }
+    timeParts.forEach(part => {
+      if (part.type === 'hour') timeObj.hours = parseInt(part.value, 10);
+      if (part.type === 'minute') timeObj.minutes = parseInt(part.value, 10);
+      if (part.type === 'second') timeObj.seconds = parseInt(part.value, 10);
     });
 
-    const hourAngle = (timeObj.hour % 12) * 30 + timeObj.minute * 0.5;
-    const minuteAngle = timeObj.minute * 6 + timeObj.second * 0.1;
-    const secondAngle = timeObj.second * 6;
+    // Рассчитываем углы
+    const hourAngle = (timeObj.hours % 12) * 30 + timeObj.minutes * 0.5;
+    const minuteAngle = timeObj.minutes * 6 + timeObj.seconds * 0.1;
+    const secondAngle = timeObj.seconds * 6;
 
     res.json({
       timezone: tz,
-      time: timeObj,
+      time: {
+        hours: timeObj.hours,
+        minutes: timeObj.minutes,
+        seconds: timeObj.seconds
+      },
       angles: {
         hour: hourAngle.toFixed(2),
         minute: minuteAngle.toFixed(2),
         second: secondAngle.toFixed(2)
-      }
+      },
+      formattedTime: timeString,
+      timezoneInfo: `Часовой пояс: ${tz}`
     });
   } catch (error) {
-    res.status(400).json({ error: 'Invalid timezone' });
+    console.error('Timezone error:', error.message);
+    res.status(400).json({ 
+      error: 'Неверный часовой пояс',
+      message: 'Используйте формат: Континент/Город (например: Europe/Moscow)',
+      suggested: ['Europe/Moscow', 'America/New_York', 'Asia/Tokyo', 'UTC']
+    });
+  }
+};
+
+const getAllTimezones = (req, res) => {
+  try {
+    const timezones = Intl.supportedValuesOf('timeZone');
+    const popularTimezones = [
+      'Europe/Moscow',
+      'Europe/London',
+      'Europe/Paris',
+      'Europe/Berlin',
+      'America/New_York',
+      'America/Chicago',
+      'America/Los_Angeles',
+      'Asia/Tokyo',
+      'Asia/Shanghai',
+      'Australia/Sydney',
+      'UTC'
+    ];
+    
+    res.json({
+      count: timezones.length,
+      popular: popularTimezones,
+      allTimezones: timezones.sort()
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to get timezones' });
   }
 };
 
 module.exports = {
   getCurrentTime,
-  getTimeByTimezone
+  getTimeByTimezone,
+  getAllTimezones
 };
