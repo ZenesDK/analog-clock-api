@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Аналоговые часы - API</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>⏰ Аналоговые часы API</h1>
+    <div class="clock">
+      <div class="face">
+        <div class="hand hour-hand" id="hour-hand"></div>
+        <div class="hand minute-hand" id="minute-hand"></div>
+        <div class="hand second-hand" id="second-hand"></div>
+      </div>
+    </div>
+    <div class="info">
+      <p id="time-text">Загрузка...</p>
+      <p id="angles-text"></p>
+    </div>
+    <div class="controls">
+      <button onclick="fetchTime()">Обновить время</button>
+      <input type="text" id="timezone" placeholder="Часовой пояс (например Europe/Moscow)" />
+      <button onclick="fetchTimeByTimezone()">Время по часовому поясу</button>
+    </div>
+    <div class="endpoints">
+      <h3>📡 Доступные эндпоинты API:</h3>
+      <ul>
+        <li><code>GET /api/time</code> — текущее время и углы стрелок</li>
+        <li><code>GET /api/time/timezone?tz=...</code> — время для указанного часового пояса</li>
+      </ul>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
